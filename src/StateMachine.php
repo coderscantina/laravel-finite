@@ -39,6 +39,7 @@ class StateMachine
                 Arr::get($cfg, 'from'),
                 Arr::get($cfg, 'to'),
                 Arr::get($cfg, 'properties'),
+                Arr::get($cfg, 'setter'),
                 Arr::get($cfg, 'guards'),
                 Arr::get($cfg, 'listeners')
             );
@@ -65,6 +66,7 @@ class StateMachine
      * @param null|State[] $initialStates
      * @param null|State $finalState
      * @param null|array|\ArrayAccess $properties
+     * @param null|\Closure[] $setter
      * @param null|\Closure[] $guards
      * @param null|\Closure[] $listeners
      *
@@ -75,11 +77,12 @@ class StateMachine
         $initialStates = null,
         $finalState = null,
         $properties = null,
+        $setter = null,
         $guards = null,
         $listeners = null
     ): self {
         if (!$transition instanceof Transition) {
-            $transition = new Transition($transition, $initialStates, $finalState, $properties, $guards, $listeners);
+            $transition = new Transition($transition, $initialStates, $finalState, $properties, $setter, $guards, $listeners);
         }
 
         $this->transitions[$transition->getName()] = $transition;
@@ -154,6 +157,12 @@ class StateMachine
         if ($t->hasProperties()) {
             $this->accessor->applyProperties($this->obj, $t->getProperties());
         }
+
+        if ($t->hasSetter()) {
+            $setter = $t->getSetter();
+            $setter($this->obj);
+        }
+
         $this->currentState = $this->getState($t->getTo());
         $this->dispatchEvent($t, $this->obj, TransitionEvent::POST);
     }

@@ -183,10 +183,28 @@ class StateMachineTest extends TestCase
     }
 
     /** @test */
+    public function it_uses_a_setter()
+    {
+
+        $stateMachine = $this->getConfiguredStateMachine();
+        $stateMachine->addTransition('test', ['draft'], 'test', null,
+            function ($obj) {
+                $obj['foo'] = 'bar';
+            }
+        );
+        $o = new Fluent();
+        $stateMachine->setObject($o);
+        $stateMachine->apply('test');
+
+        $this->assertEquals('bar', $o['foo']);
+        $this->assertEquals('test', $stateMachine->getCurrentStateName());
+    }
+
+    /** @test */
     public function it_runs_a_guard()
     {
         $stateMachine = $this->getConfiguredStateMachine();
-        $stateMachine->addTransition('test', ['draft'], 'test', null, [
+        $stateMachine->addTransition('test', ['draft'], 'test', null, null, [
             function ($obj) {
                 return $obj['allow_test'];
             }
@@ -206,7 +224,7 @@ class StateMachineTest extends TestCase
     public function it_calls_a_listener()
     {
         $stateMachine = $this->getConfiguredStateMachine();
-        $stateMachine->addTransition('test', ['draft'], 'test', null, null, [
+        $stateMachine->addTransition('test', ['draft'], 'test', null, null, null, [
             function (TransitionEvent $event) use (&$tmp) {
                 if ($event->isPre()) {
                     $tmp = $event;

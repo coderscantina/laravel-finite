@@ -14,6 +14,8 @@ class Transition
 
     protected $properties;
 
+    protected $setter;
+
     protected $listeners;
 
     public function __construct(
@@ -21,6 +23,7 @@ class Transition
         $from = [],
         string $to = null,
         $properties = null,
+        $setter = null,
         $guards = null,
         $listeners = null
     ) {
@@ -28,6 +31,7 @@ class Transition
         $this->from = collect($from);
         $this->to = $to;
         $this->properties = $properties;
+        $this->setter = $setter;
         $this->guards = collect($guards);
         $this->listeners = collect($listeners);
     }
@@ -44,6 +48,8 @@ class Transition
         }
 
         $this->from[] = $from;
+
+        return $this;
     }
 
     public function setFrom($values): self
@@ -72,6 +78,8 @@ class Transition
         }
 
         $this->to = $to;
+
+        return $this;
     }
 
     /**
@@ -137,6 +145,31 @@ class Transition
     }
 
     /**
+     * @param null|\Closure $setter
+     *
+     * @return Transition
+     */
+    public function setSetter($setter)
+    {
+        $this->setter = $setter;
+
+        return $this;
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function getSetter()
+    {
+        return $this->setter;
+    }
+
+    public function hasSetter(): bool
+    {
+        return !is_null($this->setter) && is_callable($this->setter);
+    }
+
+    /**
      * @return Collection
      */
     public function getListeners()
@@ -175,7 +208,7 @@ class Transition
 
     public function dispatchEvent($event)
     {
-        $this->listeners->each(function($listener) use ($event) {
+        $this->listeners->each(function ($listener) use ($event) {
             $listener($event);
         });
     }
