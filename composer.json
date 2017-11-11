@@ -46,7 +46,7 @@
         },
         "laravel": {
             "providers": [
-                "Neon\\Metrics\\ServiceProvider"
+                "Neon\\Finite\\ServiceProvider"
             ]
         }
 		},
