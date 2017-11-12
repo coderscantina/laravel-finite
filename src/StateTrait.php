@@ -5,12 +5,14 @@ trait StateTrait
     /** @var StateMachine */
     protected $stateMachine;
 
-    public function __construct()
+    public static function bootStateTrait()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        parent::__construct();
-
-        $this->initStateMachineTrait();
+        static::created(function($item) {
+            $item->initStateMachineTrait($item);
+        });
+        static::retrieved(function($item) {
+            $item->initStateMachineTrait($item);
+        });
     }
 
     public abstract static function initializeState(StateMachine $stateMachine): StateMachine;
@@ -53,9 +55,9 @@ trait StateTrait
         return $this;
     }
 
-    protected function initStateMachineTrait()
+    protected function initStateMachineTrait($item)
     {
-        $this->stateMachine = self::initializeState(app('StateMachine'));
-        $this->stateMachine->setObject($this);
+        $item->stateMachine = $item->initializeState(app('StateMachine'));
+        $item->stateMachine->setObject($item);
     }
 }

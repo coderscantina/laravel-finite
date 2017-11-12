@@ -45,14 +45,7 @@ use \Neon\Finite\StateMachine;
 use \Neon\Finite\StateTrait;
 
 class TestModel extends Model {
-    use StateTrait {
-        __construct as traitConstructor;
-    }
-
-    public function __construct() {
-        $this->traitConstructor();
-        $this->set_in_constructor = true;
-    }
+    use StateTrait;
 
     static function initializeState(StateMachine $stateMachine): StateMachine
     {
