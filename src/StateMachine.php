@@ -140,7 +140,7 @@ class StateMachine
         return $this->getCurrentState()->getTransitions()->contains($transition->getName());
     }
 
-    public function apply($transition)
+    public function apply($transition, $payload = null)
     {
         $t = $transition instanceof Transition ? $transition : $this->getTransition($transition);
         if ($t === null) {
@@ -156,6 +156,10 @@ class StateMachine
         $this->accessor->setState($this->obj, $t->getTo());
         if ($t->hasProperties()) {
             $this->accessor->applyProperties($this->obj, $t->getProperties());
+        }
+
+        if ($payload) {
+            $this->accessor->applyProperties($this->obj, $payload);
         }
 
         if ($t->hasSetter()) {

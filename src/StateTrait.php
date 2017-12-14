@@ -25,15 +25,15 @@ trait StateTrait
     public function applyProperties($properties)
     {
         foreach ($properties as $name => $value) {
-            $object[$name] = $value;
+            $this->$name = $value;
         }
 
         return $this;
     }
 
-    public function applyTransition($transition)
+    public function applyTransition($transition, $payload = null)
     {
-        $this->stateMachine->apply($transition);
+        $this->stateMachine->apply($transition, $payload);
 
         return $this;
     }
