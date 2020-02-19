@@ -208,8 +208,10 @@ class Transition
 
     public function dispatchEvent($event)
     {
-        $this->listeners->each(function ($listener) use ($event) {
-            $listener($event);
-        });
+        $this->listeners->each(
+            function ($listener) use ($event) {
+                $listener($event);
+            }
+        );
     }
 }

@@ -23,7 +23,6 @@ class StateTraitTest extends AbstractTestCase
         $this->assertEquals('draft', $model->getState());
         $this->assertTrue($model->canTransition('propose'));
         $this->assertFalse($model->canTransition('accept'));
-
     }
 
     /** @test */
@@ -38,30 +37,35 @@ class StateTraitTest extends AbstractTestCase
     }
 }
 
-class TestModel extends Model {
+class TestModel extends Model
+{
     use StateTrait;
 
     static function initializeState(StateMachine $stateMachine): StateMachine
     {
-        $stateMachine->initialize([
-            'states'      => [
-                'draft' => ['type' => 'initial']
-            ],
-            'transitions' => [
-                'propose' => ['from' => ['draft'], 'to' => 'proposed'],
-                'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
-                'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+        $stateMachine->initialize(
+            [
+                'states'      => [
+                    'draft' => ['type' => 'initial']
+                ],
+                'transitions' => [
+                    'propose' => ['from' => ['draft'], 'to' => 'proposed'],
+                    'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
+                    'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+                ]
             ]
-        ]);
+        );
 
         return $stateMachine;
     }
 }
 
-class TestModel2 extends Model {
+class TestModel2 extends Model
+{
     use StateTrait;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->initStateMachineTrait();
@@ -70,16 +74,18 @@ class TestModel2 extends Model {
 
     static function initializeState(StateMachine $stateMachine): StateMachine
     {
-        $stateMachine->initialize([
-            'states'      => [
-                'draft' => ['type' => 'initial']
-            ],
-            'transitions' => [
-                'propose' => ['from' => ['draft'], 'to' => 'proposed'],
-                'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
-                'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+        $stateMachine->initialize(
+            [
+                'states'      => [
+                    'draft' => ['type' => 'initial']
+                ],
+                'transitions' => [
+                    'propose' => ['from' => ['draft'], 'to' => 'proposed'],
+                    'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
+                    'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+                ]
             ]
-        ]);
+        );
 
         return $stateMachine;
     }

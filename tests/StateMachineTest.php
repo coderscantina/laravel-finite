@@ -11,12 +11,14 @@ class StateMachineTest extends TestCase
         /** @noinspection PhpParamsInspection */
         $stateMachine = new StateMachine(new FluentAccessor);
 
-        return $stateMachine->initialize($config ?: [
-            'states'      => [
-                'draft' => ['type' => 'initial']
-            ],
-            'transitions' => $this->getTransitions()
-        ]);
+        return $stateMachine->initialize(
+            $config ?: [
+                'states'      => [
+                    'draft' => ['type' => 'initial']
+                ],
+                'transitions' => $this->getTransitions()
+            ]
+        );
     }
 
     protected function getTransitions(): array
@@ -76,7 +78,6 @@ class StateMachineTest extends TestCase
 
         $stateMachine->setObject(new Fluent());
         $this->assertEquals('draft', $stateMachine->getCurrentStateName());
-
     }
 
     /** @test */
@@ -91,9 +92,11 @@ class StateMachineTest extends TestCase
     /** @test */
     public function it_reads_a_state_config()
     {
-        $stateMachine = $this->getConfiguredStateMachine([
-            'states' => $this->getStates()
-        ]);
+        $stateMachine = $this->getConfiguredStateMachine(
+            [
+                'states' => $this->getStates()
+            ]
+        );
         $this->assertCount(4, $stateMachine->getStates());
         $this->assertEquals('draft', $stateMachine->getInitialStateName());
         $this->assertEquals('final', $stateMachine->getState('refused')->getType());
@@ -102,9 +105,11 @@ class StateMachineTest extends TestCase
     /** @test */
     public function it_reads_a_transition_config()
     {
-        $stateMachine = $this->getConfiguredStateMachine([
-            'transitions' => $this->getTransitions()
-        ]);
+        $stateMachine = $this->getConfiguredStateMachine(
+            [
+                'transitions' => $this->getTransitions()
+            ]
+        );
 
         $this->assertCount(3, $stateMachine->getTransitions());
         $this->assertEquals(['foo' => 'bar'], $stateMachine->getTransition('propose')->getProperties());
@@ -120,8 +125,10 @@ class StateMachineTest extends TestCase
 
         $this->assertCount(4, $stateMachine->getStates());
         $this->assertContains('proposed', $stateMachine->getStates()->keys());
-        $this->assertEquals(['draft', 'proposed', 'accepted', 'refused'],
-            $stateMachine->getStates()->keys()->toArray());
+        $this->assertEquals(
+            ['draft', 'proposed', 'accepted', 'refused'],
+            $stateMachine->getStates()->keys()->toArray()
+        );
     }
 
     /** @test */
@@ -185,9 +192,12 @@ class StateMachineTest extends TestCase
     /** @test */
     public function it_uses_a_setter()
     {
-
         $stateMachine = $this->getConfiguredStateMachine();
-        $stateMachine->addTransition('test', ['draft'], 'test', null,
+        $stateMachine->addTransition(
+            'test',
+            ['draft'],
+            'test',
+            null,
             function ($obj) {
                 $obj['foo'] = 'bar';
             }
@@ -204,33 +214,49 @@ class StateMachineTest extends TestCase
     public function it_runs_a_guard()
     {
         $stateMachine = $this->getConfiguredStateMachine();
-        $stateMachine->addTransition('test', ['draft'], 'test', null, null, [
-            function ($obj) {
-                return $obj['allow_test'];
-            }
-        ]);
-        $obj = new Fluent([
-            'allow_test' => false
-        ]);
+        $stateMachine->addTransition(
+            'test',
+            ['draft'],
+            'test',
+            null,
+            null,
+            [
+                function ($obj) {
+                    return $obj['allow_test'];
+                }
+            ]
+        );
+        $obj = new Fluent(
+            [
+                'allow_test' => false
+            ]
+        );
         $stateMachine->setObject($obj);
 
         $this->assertFalse($stateMachine->can('test'));
         $obj['allow_test'] = true;
         $this->assertTrue($stateMachine->can('test'));
-
     }
 
     /** @test */
     public function it_calls_a_listener()
     {
         $stateMachine = $this->getConfiguredStateMachine();
-        $stateMachine->addTransition('test', ['draft'], 'test', null, null, null, [
-            function (TransitionEvent $event) use (&$tmp) {
-                if ($event->isPre()) {
-                    $tmp = $event;
+        $stateMachine->addTransition(
+            'test',
+            ['draft'],
+            'test',
+            null,
+            null,
+            null,
+            [
+                function (TransitionEvent $event) use (&$tmp) {
+                    if ($event->isPre()) {
+                        $tmp = $event;
+                    }
                 }
-            }
-        ]);
+            ]
+        );
         $stateMachine->setObject(new Fluent());
         $stateMachine->apply('test');
 
@@ -247,6 +273,5 @@ class StateMachineTest extends TestCase
         $stateMachine->apply('propose');
 
         $this->assertEquals('bar', $obj->get('foo'));
-
     }
 }

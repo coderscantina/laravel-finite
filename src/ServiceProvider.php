@@ -11,12 +11,18 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function register()
     {
-        $this->app->bind('StateMachine', function () {
-            return new StateMachine(new TraitAccessor());
-        });
+        $this->app->bind(
+            'StateMachine',
+            function () {
+                return new StateMachine(new TraitAccessor());
+            }
+        );
 
-        $this->app->bind('FluentStateMachine', function () {
-            return new StateMachine(new FluentAccessor());
-        });
+        $this->app->bind(
+            'FluentStateMachine',
+            function () {
+                return new StateMachine(new FluentAccessor());
+            }
+        );
     }
 }

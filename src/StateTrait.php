@@ -7,12 +7,16 @@ trait StateTrait
 
     public static function bootStateTrait()
     {
-        static::created(function($item) {
-            $item->initStateMachineTrait($item);
-        });
-        static::retrieved(function($item) {
-            $item->initStateMachineTrait($item);
-        });
+        static::created(
+            function ($item) {
+                $item->initStateMachineTrait($item);
+            }
+        );
+        static::retrieved(
+            function ($item) {
+                $item->initStateMachineTrait($item);
+            }
+        );
     }
 
     public abstract static function initializeState(StateMachine $stateMachine): StateMachine;

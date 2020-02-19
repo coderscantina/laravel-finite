@@ -82,24 +82,36 @@ class StateMachine
         $listeners = null
     ): self {
         if (!$transition instanceof Transition) {
-            $transition = new Transition($transition, $initialStates, $finalState, $properties, $setter, $guards, $listeners);
+            $transition = new Transition(
+                $transition,
+                $initialStates,
+                $finalState,
+                $properties,
+                $setter,
+                $guards,
+                $listeners
+            );
         }
 
         $this->transitions[$transition->getName()] = $transition;
 
-        collect($initialStates)->each(function ($item) {
-            if (!$this->states->offsetExists($item)) {
-                $this->addState($item);
+        collect($initialStates)->each(
+            function ($item) {
+                if (!$this->states->offsetExists($item)) {
+                    $this->addState($item);
+                }
             }
-        });
+        );
 
         if (!$this->states->offsetExists($finalState)) {
             $this->addState($finalState);
         }
 
-        $transition->getFrom()->each(function (string $state) use ($transition) {
-            $this->getState($state)->addTransition($transition);
-        });
+        $transition->getFrom()->each(
+            function (string $state) use ($transition) {
+                $this->getState($state)->addTransition($transition);
+            }
+        );
 
         return $this;
     }
@@ -131,8 +143,10 @@ class StateMachine
     {
         $transition = $transition instanceof Transition ? $transition : $this->getTransition($transition);
 
-        if ($transition === null || ($transition->hasGuards() && !$this->accessor->callGuards($this->obj,
-                    $transition->getGuards()))
+        if ($transition === null || ($transition->hasGuards() && !$this->accessor->callGuards(
+                    $this->obj,
+                    $transition->getGuards()
+                ))
         ) {
             return false;
         }
@@ -148,7 +162,9 @@ class StateMachine
         }
 
         if (!$this->can($t)) {
-            throw new InvalidStateException("Transition `{$t->getName()}` is not possible in current state `{$this->getCurrentStateName()}`");
+            throw new InvalidStateException(
+                "Transition `{$t->getName()}` is not possible in current state `{$this->getCurrentStateName()}`"
+            );
         }
 
         $this->dispatchEvent($t, $this->obj, TransitionEvent::PRE);
