@@ -41,7 +41,7 @@ class TestModel extends Model
 {
     use StateTrait;
 
-    static function initializeState(StateMachine $stateMachine): StateMachine
+    protected static function initializeState(StateMachine $stateMachine): StateMachine
     {
         $stateMachine->initialize(
             [
@@ -68,11 +68,11 @@ class TestModel2 extends Model
     {
         parent::__construct();
 
-        $this->initStateMachineTrait();
+        $this->initializeStateTrait();
         $this->set_in_constructor = true;
     }
 
-    static function initializeState(StateMachine $stateMachine): StateMachine
+    protected static function initializeState(StateMachine $stateMachine): StateMachine
     {
         $stateMachine->initialize(
             [

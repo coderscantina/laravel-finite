@@ -8,18 +8,18 @@ trait StateTrait
     public static function bootStateTrait()
     {
         static::created(
-            function ($item) {
-                $item->initStateMachineTrait($item);
+            function (StateTrait $item) {
+                $item->initializeStateTrait();
             }
         );
         static::retrieved(
-            function ($item) {
-                $item->initStateMachineTrait($item);
+            function (StateTrait $item) {
+                $item->initializeStateTrait();
             }
         );
     }
 
-    abstract public static function initializeState(StateMachine $stateMachine): StateMachine;
+    abstract protected static function initializeState(StateMachine $stateMachine): StateMachine;
 
     protected function getStateMachine()
     {
@@ -59,9 +59,9 @@ trait StateTrait
         return $this;
     }
 
-    protected function initStateMachineTrait($item)
+    protected function initializeStateTrait()
     {
-        $item->stateMachine = $item->initializeState(app('StateMachine'));
-        $item->stateMachine->setObject($item);
+        $this->stateMachine = $this->initializeState(app('StateMachine'));
+        $this->stateMachine->setObject($this);
     }
 }
