@@ -8,12 +8,12 @@ trait StateTrait
     public static function bootStateTrait()
     {
         static::created(
-            function (StateTrait $item) {
+            function ($item) {
                 $item->initializeStateTrait();
             }
         );
         static::retrieved(
-            function (StateTrait $item) {
+            function ($item) {
                 $item->initializeStateTrait();
             }
         );
