@@ -19,7 +19,7 @@ trait StateTrait
         );
     }
 
-    public abstract static function initializeState(StateMachine $stateMachine): StateMachine;
+    abstract public static function initializeState(StateMachine $stateMachine): StateMachine;
 
     protected function getStateMachine()
     {
