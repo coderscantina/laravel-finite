@@ -176,7 +176,7 @@ class StateMachine
         }
 
         if ($t->hasApply()) {
-            $t->apply($this->obj);
+            $t->apply($this->obj, $payload);
 
             return;
         }

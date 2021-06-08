@@ -3,7 +3,7 @@
 use Illuminate\Support\Collection;
 
 /**
- * @method apply(&$item)
+ * @method apply(&$item, $payload)
  * @method can(&$item): bool
  */
 class Transition
