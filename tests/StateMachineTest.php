@@ -1,4 +1,5 @@
-<?php namespace Neon\Finite;
+<?php
+namespace Neon\Finite;
 
 use Illuminate\Support\Fluent;
 use Neon\Finite\Accessor\FluentAccessor;
@@ -273,5 +274,43 @@ class StateMachineTest extends TestCase
         $stateMachine->apply('propose');
 
         $this->assertEquals('bar', $obj->get('foo'));
+    }
+
+    /** @test */
+    public function itHandlesClassBasedTransitions(): void
+    {
+        $stateMachine = $this->getConfiguredStateMachine(
+            [
+                'states'      => [
+                    'draft' => ['type' => 'initial']
+                ],
+                'transitions' => [
+                    'accept'  => new FooTransition('accept', ['draft'], 'accepted'),
+                    'refuse'  => ['from' => ['draft'], 'to' => 'refused']
+                ]
+            ]);
+
+        $obj = new Fluent();
+        $stateMachine->setObject($obj);
+
+        $stateMachine->apply('accept');
+
+        $this->assertEquals('bar', $obj->get('foo'));
+        $this->assertEquals('accepted', $obj->get('state'));
+    }
+}
+
+
+class FooTransition extends Transition
+{
+    public function apply($obj)
+    {
+        $obj->state = $this->getTo();
+        $obj->foo = 'bar';
+    }
+
+    public function can($obj): bool
+    {
+        return true;
     }
 }

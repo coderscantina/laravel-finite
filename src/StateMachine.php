@@ -29,20 +29,24 @@ class StateMachine
 
     public function initialize($config = []): self
     {
-        foreach (Arr::get($config, 'states', []) as $name => $cfg) {
-            $this->addState($name, Arr::get($cfg, 'type'), Arr::get($cfg, 'properties'));
+        foreach (Arr::get($config, 'states', []) as $name => $state) {
+            $this->addState($name, Arr::get($state, 'type'), Arr::get($state, 'properties'));
         }
 
-        foreach (Arr::get($config, 'transitions', []) as $name => $cfg) {
-            $this->addTransition(
-                $name,
-                Arr::get($cfg, 'from'),
-                Arr::get($cfg, 'to'),
-                Arr::get($cfg, 'properties'),
-                Arr::get($cfg, 'setter'),
-                Arr::get($cfg, 'guards'),
-                Arr::get($cfg, 'listeners')
-            );
+        foreach (Arr::get($config, 'transitions', []) as $name => $transition) {
+            if ($transition instanceof Transition) {
+                $this->addTransition($transition);
+            } else {
+                $this->addTransition(
+                    $name,
+                    Arr::get($transition, 'from'),
+                    Arr::get($transition, 'to'),
+                    Arr::get($transition, 'properties'),
+                    Arr::get($transition, 'setter'),
+                    Arr::get($transition, 'guards'),
+                    Arr::get($transition, 'listeners')
+                );
+            }
         }
 
         return $this;
@@ -95,7 +99,7 @@ class StateMachine
 
         $this->transitions[$transition->getName()] = $transition;
 
-        collect($initialStates)->each(
+        collect($transition->getFrom())->each(
             function ($item) {
                 if (!$this->states->offsetExists($item)) {
                     $this->addState($item);
@@ -103,8 +107,8 @@ class StateMachine
             }
         );
 
-        if (!$this->states->offsetExists($finalState)) {
-            $this->addState($finalState);
+        if (!$this->states->offsetExists($transition->getTo())) {
+            $this->addState($transition->getTo());
         }
 
         $transition->getFrom()->each(
@@ -143,11 +147,15 @@ class StateMachine
     {
         $transition = $transition instanceof Transition ? $transition : $this->getTransition($transition);
 
-        if ($transition === null || ($transition->hasGuards() && !$this->accessor->callGuards(
-                    $this->obj,
-                    $transition->getGuards()
-                ))
-        ) {
+        if ($transition === null) {
+            return false;
+        }
+
+        if ($transition->hasGuards() && !$this->accessor->callGuards($this->obj, $transition->getGuards())) {
+            return false;
+        }
+
+        if ($transition->hasCan() && !$transition->can($this->obj)) {
             return false;
         }
 
@@ -165,6 +173,12 @@ class StateMachine
             throw new InvalidStateException(
                 "Transition `{$t->getName()}` is not possible in current state `{$this->getCurrentStateName()}`"
             );
+        }
+
+        if ($t->hasApply()) {
+            $t->apply($this->obj);
+
+            return;
         }
 
         $this->dispatchEvent($t, $this->obj, TransitionEvent::PRE);

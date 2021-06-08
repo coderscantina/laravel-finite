@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Collection;
 
+/**
+ * @method apply(&$item)
+ * @method can(&$item): bool
+ */
 class Transition
 {
     protected $name;
@@ -213,5 +217,15 @@ class Transition
                 $listener($event);
             }
         );
+    }
+
+    public function hasApply(): bool
+    {
+        return is_callable([$this, 'apply']);
+    }
+
+    public function hasCan(): bool
+    {
+        return is_callable([$this, 'can']);
     }
 }
