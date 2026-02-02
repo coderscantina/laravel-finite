@@ -1,22 +1,21 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 use Illuminate\Support\Collection;
 
 class State
 {
-    const TYPE_INITIAL = 'initial';
-    const TYPE_NORMAL = 'normal';
-    const TYPE_FINAL = 'final';
+    public const string TYPE_INITIAL = 'initial';
+    public const string TYPE_NORMAL = 'normal';
+    public const string TYPE_FINAL = 'final';
 
-    protected $type;
-    protected $name;
-    protected $properties;
-    /**
-     * @var Collection
-     */
-    protected $transitions;
+    protected string $type;
+    protected string $name;
+    protected array $properties;
+    protected Collection $transitions;
 
-    public function __construct($name, $type = self::TYPE_NORMAL, $transitions = [], $properties = [])
+    public function __construct(string $name, string $type = self::TYPE_NORMAL, array $transitions = [], array $properties = [])
     {
         $this->name = $name;
         $this->type = $type;
@@ -24,17 +23,17 @@ class State
         $this->properties = $properties;
     }
 
-    public function isInitial()
+    public function isInitial(): bool
     {
         return self::TYPE_INITIAL === $this->type;
     }
 
-    public function isFinal()
+    public function isFinal(): bool
     {
         return self::TYPE_FINAL === $this->type;
     }
 
-    public function isNormal()
+    public function isNormal(): bool
     {
         return self::TYPE_NORMAL === $this->type;
     }
@@ -49,7 +48,7 @@ class State
         return $this->transitions;
     }
 
-    public function addTransition($transition): self
+    public function addTransition(string|Transition $transition): self
     {
         if ($transition instanceof Transition) {
             $transition = $transition->getName();
@@ -68,7 +67,7 @@ class State
         return $this;
     }
 
-    public function can($transition): bool
+    public function can(string|Transition $transition): bool
     {
         if ($transition instanceof Transition) {
             $transition = $transition->getName();

@@ -1,28 +1,22 @@
-<?php namespace Neon\Finite;
+<?php
 
-use Neon\Finite\Accessor\FluentAccessor;
-use Neon\Finite\Accessor\TraitAccessor;
+namespace CodersCantina\LaravelFinite;
+
+use CodersCantina\LaravelFinite\Accessor\FluentAccessor;
+use CodersCantina\LaravelFinite\Accessor\TraitAccessor;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    public function boot()
-    {
-    }
-
     public function register()
     {
         $this->app->bind(
             'StateMachine',
-            function () {
-                return new StateMachine(new TraitAccessor());
-            }
+            fn() => new StateMachine(new TraitAccessor())
         );
 
         $this->app->bind(
             'FluentStateMachine',
-            function () {
-                return new StateMachine(new FluentAccessor());
-            }
+            fn() => new StateMachine(new FluentAccessor())
         );
     }
 }

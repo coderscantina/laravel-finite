@@ -1,36 +1,32 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 use Illuminate\Support\Arr;
-use Neon\Finite\Accessor\Accessor;
+use Illuminate\Support\Collection;
+use CodersCantina\LaravelFinite\Accessor\Accessor;
+use Closure;
+use ArrayAccess;
 
 class StateMachine
 {
-    protected $obj;
-
-    /** @var Accessor */
-    protected $accessor;
-
-    /** @var \Illuminate\Support\Collection */
-    protected $transitions;
-
-    /** @var \Illuminate\Support\Collection */
-    protected $states;
-
-    /** @var State */
-    protected $currentState;
+    protected object $obj;
+    protected Accessor $accessor;
+    protected Collection $transitions;
+    protected Collection $states;
+    protected State $currentState;
 
     public function __construct(Accessor $accessor)
     {
         $this->accessor = $accessor;
-
         $this->transitions = collect();
         $this->states = collect();
     }
 
-    public function initialize($config = []): self
+    public function initialize(array $config = []): self
     {
         foreach (Arr::get($config, 'states', []) as $name => $state) {
-            $this->addState($name, Arr::get($state, 'type'), Arr::get($state, 'properties'));
+            $this->addState($name, Arr::get($state, 'type') ?? State::TYPE_NORMAL, Arr::get($state, 'properties') ?? []);
         }
 
         foreach (Arr::get($config, 'transitions', []) as $name => $transition) {
@@ -52,7 +48,7 @@ class StateMachine
         return $this;
     }
 
-    public function setObject($obj): self
+    public function setObject(object $obj): self
     {
         $this->obj = $obj;
         $initialState = $this->accessor->getState($obj);
@@ -65,35 +61,24 @@ class StateMachine
         return $this;
     }
 
-    /**
-     * @param string|Transition $transition
-     * @param null|State[] $initialStates
-     * @param null|State $finalState
-     * @param null|array|\ArrayAccess $properties
-     * @param null|\Closure[] $setter
-     * @param null|\Closure[] $guards
-     * @param null|\Closure[] $listeners
-     *
-     * @return StateMachine
-     */
     public function addTransition(
-        $transition,
-        $initialStates = null,
-        $finalState = null,
-        $properties = null,
-        $setter = null,
-        $guards = null,
-        $listeners = null
+        Transition|string $transition,
+        array|null $initialStates = null,
+        string|null $finalState = null,
+        array|ArrayAccess|null $properties = null,
+        Closure|null $setter = null,
+        array|null $guards = null,
+        array|null $listeners = null
     ): self {
         if (!$transition instanceof Transition) {
             $transition = new Transition(
                 $transition,
-                $initialStates,
+                $initialStates ?? [],
                 $finalState,
                 $properties,
                 $setter,
-                $guards,
-                $listeners
+                $guards ?? [],
+                $listeners ?? []
             );
         }
 
@@ -120,30 +105,17 @@ class StateMachine
         return $this;
     }
 
-    /**
-     * @return \Illuminate\Support\Collection|Transition[]
-     */
-    public function getTransitions(): \Illuminate\Support\Collection
+    public function getTransitions(): Collection
     {
         return $this->transitions;
     }
 
-    /**
-     * @param $name
-     *
-     * @return Transition|null
-     */
-    public function getTransition($name)
+    public function getTransition(string $name): ?Transition
     {
         return $this->transitions->get($name);
     }
 
-    /**
-     * @param string|Transition $transition
-     *
-     * @return bool
-     */
-    public function can($transition): bool
+    public function can(Transition|string $transition): bool
     {
         $transition = $transition instanceof Transition ? $transition : $this->getTransition($transition);
 
@@ -162,7 +134,7 @@ class StateMachine
         return $this->getCurrentState()->getTransitions()->contains($transition->getName());
     }
 
-    public function apply($transition, $payload = null)
+    public function apply(Transition|string $transition, mixed $payload = null): void
     {
         $t = $transition instanceof Transition ? $transition : $this->getTransition($transition);
         if ($t === null) {
@@ -201,17 +173,13 @@ class StateMachine
         $this->dispatchEvent($t, $this->obj, TransitionEvent::POST);
     }
 
-    /**
-     * @param string|State $state
-     * @param string $type
-     * @param array $properties
-     *
-     * @return StateMachine
-     */
-    public function addState($state, $type = State::TYPE_NORMAL, $properties = []): self
-    {
+    public function addState(
+        State|string $state,
+        string $type = State::TYPE_NORMAL,
+        array $properties = []
+    ): self {
         if (!$state instanceof State) {
-            $state = new State($state, $type, $properties);
+            $state = new State($state, $type, [], $properties);
         }
 
         $this->states[$state->getName()] = $state;
@@ -219,19 +187,12 @@ class StateMachine
         return $this;
     }
 
-    /**
-     * @return State|Null
-     */
-    public function getInitialState(): State
+    public function getInitialState(): ?State
     {
-        return $this->states->first->isInitial();
+        return $this->states->first(fn($state) => $state->isInitial());
     }
 
-    /**
-     * @return string
-     * @throws InvalidStateException
-     */
-    public function getInitialStateName()
+    public function getInitialStateName(): string
     {
         $initial = $this->getInitialState();
         if ($initial) {
@@ -241,54 +202,32 @@ class StateMachine
         throw new InvalidStateException('No initial state found');
     }
 
-    /**
-     * @return \Illuminate\Support\Collection|State[]
-     */
-    public function getStates(): \Illuminate\Support\Collection
+    public function getStates(): Collection
     {
         return $this->states;
     }
 
-    /**
-     * @param $state
-     *
-     * @return State|null
-     */
-    public function getState($state)
+    public function getState(string $state): ?State
     {
         return $this->states->get($state);
     }
 
-    /**
-     * @return State
-     */
     public function getCurrentState(): State
     {
         return $this->currentState;
     }
 
-    /**
-     * @return string
-     */
-    public function getCurrentStateName()
+    public function getCurrentStateName(): string
     {
         return $this->currentState->getName();
     }
 
-    /**
-     * @return Accessor
-     */
     public function getAccessor(): Accessor
     {
         return $this->accessor;
     }
 
-    /**
-     * @param Transition $transition
-     * @param $obj
-     * @param $type
-     */
-    protected function dispatchEvent($transition, $obj, $type)
+    protected function dispatchEvent(Transition $transition, object $obj, string $type): void
     {
         $event = new TransitionEvent($transition, $obj, $type);
         $transition->dispatchEvent($event);

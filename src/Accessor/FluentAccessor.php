@@ -1,26 +1,17 @@
-<?php namespace Neon\Finite\Accessor;
+<?php
 
-use Illuminate\Support\Fluent;
+namespace CodersCantina\LaravelFinite\Accessor;
+
+use ArrayAccess;
 
 class FluentAccessor implements Accessor
 {
-    /**
-     * @param Fluent $object
-     *
-     * @return string|null
-     */
-    public function getState($object)
+    public function getState(object $object): ?string
     {
         return $object['state'];
     }
 
-    /**
-     * @param Fluent $object
-     * @param array $properties
-     *
-     * @return $this
-     */
-    public function applyProperties($object, $properties)
+    public function applyProperties(object $object, array $properties): self
     {
         foreach ($properties as $name => $value) {
             $object[$name] = $value;
@@ -29,26 +20,14 @@ class FluentAccessor implements Accessor
         return $this;
     }
 
-    /**
-     * @param Fluent $object
-     * @param string $state
-     *
-     * @return FluentAccessor
-     */
-    public function setState($object, $state)
+    public function setState(object $object, string $state): self
     {
         $object['state'] = $state;
 
         return $this;
     }
 
-    /**
-     * @param $object
-     * @param \Closure[] $guards
-     *
-     * @return bool
-     */
-    public function callGuards($object, $guards)
+    public function callGuards(object $object, array|ArrayAccess $guards): bool
     {
         $result = true;
 

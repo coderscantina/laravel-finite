@@ -1,10 +1,12 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 use GrahamCampbell\TestBench\AbstractPackageTestCase;
 
 class AbstractTestCase extends AbstractPackageTestCase
 {
-    protected function getServiceProviderClass()
+    protected static function getServiceProviderClass(): string
     {
         return ServiceProvider::class;
     }

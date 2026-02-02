@@ -1,32 +1,25 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 trait StateTrait
 {
-    /** @var StateMachine */
-    protected $stateMachine;
+    protected StateMachine $stateMachine;
 
-    public static function bootStateTrait()
+    public static function bootStateTrait(): void
     {
-        static::created(
-            function ($item) {
-                $item->initializeStateTrait();
-            }
-        );
-        static::retrieved(
-            function ($item) {
-                $item->initializeStateTrait();
-            }
-        );
+        static::created(fn($item) => $item->initializeStateTrait());
+        static::retrieved(fn($item) => $item->initializeStateTrait());
     }
 
     abstract protected static function initializeState(StateMachine $stateMachine): StateMachine;
 
-    protected function getStateMachine()
+    protected function getStateMachine(): StateMachine
     {
         return $this->stateMachine;
     }
 
-    public function applyProperties($properties)
+    public function applyProperties(array $properties): self
     {
         foreach ($properties as $name => $value) {
             $this->$name = $value;
@@ -35,31 +28,31 @@ trait StateTrait
         return $this;
     }
 
-    public function applyTransition($transition, $payload = null)
+    public function applyTransition(string $transition, mixed $payload = null): self
     {
         $this->stateMachine->apply($transition, $payload);
 
         return $this;
     }
 
-    public function canTransition($transition)
+    public function canTransition(string $transition): bool
     {
         return $this->stateMachine->can($transition);
     }
 
-    public function getState()
+    public function getState(): ?string
     {
-        return $this['state'];
+        return $this['state'] ?? null;
     }
 
-    public function setState($state): self
+    public function setState(string $state): self
     {
         $this['state'] = $state;
 
         return $this;
     }
 
-    protected function initializeStateTrait()
+    protected function initializeStateTrait(): void
     {
         $this->stateMachine = $this->initializeState(app('StateMachine'));
         $this->stateMachine->setObject($this);

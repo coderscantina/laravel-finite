@@ -1,7 +1,9 @@
-<?php namespace Neon\Finite;
+<?php
 
-use Neon\Finite\Accessor\FluentAccessor;
-use Neon\Finite\Accessor\TraitAccessor;
+namespace CodersCantina\LaravelFinite;
+
+use CodersCantina\LaravelFinite\Accessor\FluentAccessor;
+use CodersCantina\LaravelFinite\Accessor\TraitAccessor;
 
 class ServiceProviderTest extends AbstractTestCase
 {

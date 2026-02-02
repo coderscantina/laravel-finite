@@ -1,4 +1,5 @@
-<?php namespace Neon\Finite;
+<?php
+namespace CodersCantina\LaravelFinite;
 
 class InvalidStateException extends \Exception
 {

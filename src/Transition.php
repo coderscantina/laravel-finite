@@ -1,35 +1,28 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 use Illuminate\Support\Collection;
+use Closure;
 
-/**
- * @method apply(&$item, $payload)
- * @method can(&$item): bool
- */
 class Transition
 {
-    protected $name;
-
-    protected $from;
-
-    protected $to;
-
-    protected $guards;
-
-    protected $properties;
-
-    protected $setter;
-
-    protected $listeners;
+    protected string $name;
+    protected Collection $from;
+    protected ?string $to;
+    protected Collection $guards;
+    protected mixed $properties;
+    protected ?Closure $setter;
+    protected Collection $listeners;
 
     public function __construct(
         string $name,
-        $from = [],
-        string $to = null,
-        $properties = null,
-        $setter = null,
-        $guards = null,
-        $listeners = null
+        array $from = [],
+        ?string $to = null,
+        mixed $properties = null,
+        ?Closure $setter = null,
+        array $guards = [],
+        array $listeners = []
     ) {
         $this->name = $name;
         $this->from = collect($from);
@@ -45,7 +38,7 @@ class Transition
         return $this->name;
     }
 
-    public function addFrom($from): self
+    public function addFrom(State|string $from): self
     {
         if ($from instanceof State) {
             $from = $from->getName();
@@ -56,7 +49,7 @@ class Transition
         return $this;
     }
 
-    public function setFrom($values): self
+    public function setFrom(array $values): self
     {
         foreach ($values as $from) {
             $this->addFrom($from);
@@ -65,7 +58,7 @@ class Transition
         return $this;
     }
 
-    public function getFrom(): \Illuminate\Support\Collection
+    public function getFrom(): Collection
     {
         return $this->from;
     }
@@ -75,7 +68,7 @@ class Transition
         return $this->to;
     }
 
-    public function setTo($to): self
+    public function setTo(State|string $to): self
     {
         if ($to instanceof State) {
             $to = $to->getName();
@@ -86,57 +79,36 @@ class Transition
         return $this;
     }
 
-    /**
-     * @return null|array|\ArrayAccess
-     */
-    public function getProperties()
+    public function getProperties(): mixed
     {
         return $this->properties;
     }
 
     public function hasProperties(): bool
     {
-        return is_array($this->properties) && count($this->properties);
+        return \is_array($this->properties) && \count($this->properties);
     }
 
-    /**
-     * @param null|array|\ArrayAccess $properties
-     *
-     * @return $this
-     */
-    public function setProperties($properties)
+    public function setProperties(mixed $properties): self
     {
         $this->properties = $properties;
 
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
-    public function getGuards()
+    public function getGuards(): Collection
     {
         return $this->guards;
     }
 
-    /**
-     * @param \Closure $guards
-     *
-     * @return $this
-     */
-    public function setGuards($guards)
+    public function setGuards(array $guards): self
     {
         $this->guards = collect($guards);
 
         return $this;
     }
 
-    /**
-     * @param \Closure $guard
-     *
-     * @return $this
-     */
-    public function addGuard($guard)
+    public function addGuard(Closure $guard): self
     {
         $this->guards[] = $guard;
 
@@ -145,60 +117,39 @@ class Transition
 
     public function hasGuards(): bool
     {
-        return count($this->guards);
+        return \count($this->guards) > 0;
     }
 
-    /**
-     * @param null|\Closure $setter
-     *
-     * @return Transition
-     */
-    public function setSetter($setter)
+    public function setSetter(?Closure $setter): self
     {
         $this->setter = $setter;
 
         return $this;
     }
 
-    /**
-     * @return \Closure
-     */
-    public function getSetter()
+    public function getSetter(): ?Closure
     {
         return $this->setter;
     }
 
     public function hasSetter(): bool
     {
-        return !is_null($this->setter) && is_callable($this->setter);
+        return $this->setter !== null && \is_callable($this->setter);
     }
 
-    /**
-     * @return Collection
-     */
-    public function getListeners()
+    public function getListeners(): Collection
     {
         return $this->listeners;
     }
 
-    /**
-     * @param \Closure $listeners
-     *
-     * @return $this
-     */
-    public function setListeners($listeners)
+    public function setListeners(array $listeners): self
     {
         $this->listeners = collect($listeners);
 
         return $this;
     }
 
-    /**
-     * @param \Closure $listener
-     *
-     * @return $this
-     */
-    public function addListener($listener)
+    public function addListener(Closure $listener): self
     {
         $this->listeners[] = $listener;
 
@@ -207,16 +158,12 @@ class Transition
 
     public function hasListeners(): bool
     {
-        return count($this->listeners);
+        return \count($this->listeners) > 0;
     }
 
-    public function dispatchEvent($event)
+    public function dispatchEvent(TransitionEvent $event): void
     {
-        $this->listeners->each(
-            function ($listener) use ($event) {
-                $listener($event);
-            }
-        );
+        $this->listeners->each(fn(Closure $listener) => $listener($event));
     }
 
     public function hasApply(): bool

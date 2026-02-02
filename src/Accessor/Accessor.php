@@ -1,37 +1,16 @@
-<?php namespace Neon\Finite\Accessor;
+<?php
 
-use Neon\Finite\StateTrait;
+namespace CodersCantina\LaravelFinite\Accessor;
+
+use ArrayAccess;
 
 interface Accessor
 {
-    /**
-     * @param $object
-     * @param string $state
-     *
-     * @return self
-     */
-    public function setState($object, $state);
+    public function setState(object $object, string $state): self;
 
-    /**
-     * @param StateTrait $object
-     *
-     * @return string|null
-     */
-    public function getState($object);
+    public function getState(object $object): ?string;
 
-    /**
-     * @param $object
-     * @param array $properties
-     *
-     * @return self
-     */
-    public function applyProperties($object, $properties);
+    public function applyProperties(object $object, array $properties): self;
 
-    /**
-     * @param $object
-     * @param array|\ArrayAccess $guards
-     *
-     * @return bool
-     */
-    public function callGuards($object, $guards);
+    public function callGuards(object $object, array|ArrayAccess $guards): bool;
 }
