@@ -1,70 +1,51 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 class TransitionEvent
 {
-    const PRE = 'pre';
+    public const string PRE = 'pre';
+    public const string POST = 'post';
+    public const string TEST = 'test';
 
-    const POST = 'post';
+    protected Transition $transition;
+    protected string $type;
+    protected object $obj;
 
-    const TEST = 'test';
-
-    /**
-     * @var Transition
-     */
-    protected $transition;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var
-     */
-    protected $obj;
-
-    /**
-     * TransitionEvent constructor.
-     *
-     * @param Transition $transition
-     * @param $obj
-     * @param string $type
-     */
-    function __construct(Transition $transition, $obj, $type)
+    public function __construct(Transition $transition, object $obj, string $type)
     {
         $this->type = $type;
         $this->transition = $transition;
         $this->obj = $obj;
     }
 
-    public function isPre()
+    public function isPre(): bool
     {
         return $this->type === self::PRE;
     }
 
-    public function isPost()
+    public function isPost(): bool
     {
         return $this->type === self::POST;
     }
 
-    public function isTest()
+    public function isTest(): bool
     {
         return $this->type === self::TEST;
     }
 
-    public function getObject()
+    public function getObject(): object
     {
         return $this->obj;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getTransition()
+    public function getTransition(): Transition
     {
         return $this->transition;
     }
-
 }

@@ -1,20 +1,21 @@
 <?php
-namespace Neon\Finite;
+
+namespace CodersCantina\LaravelFinite;
 
 use Illuminate\Support\Fluent;
-use Neon\Finite\Accessor\FluentAccessor;
+use CodersCantina\LaravelFinite\Accessor\FluentAccessor;
 use PHPUnit\Framework\TestCase;
 
 class StateMachineTest extends TestCase
 {
-    protected function getConfiguredStateMachine($config = null): \Neon\Finite\StateMachine
+    protected function getConfiguredStateMachine($config = null): \CodersCantina\LaravelFinite\StateMachine
     {
         /** @noinspection PhpParamsInspection */
         $stateMachine = new StateMachine(new FluentAccessor);
 
         return $stateMachine->initialize(
             $config ?: [
-                'states'      => [
+                'states' => [
                     'draft' => ['type' => 'initial']
                 ],
                 'transitions' => $this->getTransitions()
@@ -26,18 +27,18 @@ class StateMachineTest extends TestCase
     {
         return [
             'propose' => ['from' => ['draft'], 'to' => 'proposed', 'properties' => ['foo' => 'bar']],
-            'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
-            'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+            'accept' => ['from' => ['proposed'], 'to' => 'accepted'],
+            'refuse' => ['from' => ['proposed'], 'to' => 'refused']
         ];
     }
 
     protected function getStates(): array
     {
         return [
-            'draft'    => ['type' => 'initial'],
+            'draft' => ['type' => 'initial'],
             'proposed' => [],
             'accepted' => ['type' => 'final'],
-            'refused'  => ['type' => 'final'],
+            'refused' => ['type' => 'final'],
         ];
     }
 
@@ -281,14 +282,15 @@ class StateMachineTest extends TestCase
     {
         $stateMachine = $this->getConfiguredStateMachine(
             [
-                'states'      => [
+                'states' => [
                     'draft' => ['type' => 'initial']
                 ],
                 'transitions' => [
-                    'accept'  => new FooTransition('accept', ['draft'], 'accepted'),
-                    'refuse'  => ['from' => ['draft'], 'to' => 'refused']
+                    'accept' => new FooTransition('accept', ['draft'], 'accepted'),
+                    'refuse' => ['from' => ['draft'], 'to' => 'refused']
                 ]
-            ]);
+            ]
+        );
 
         $obj = new Fluent();
         $stateMachine->setObject($obj);

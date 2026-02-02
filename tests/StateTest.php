@@ -1,4 +1,6 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 class StateTest extends \PHPUnit\Framework\TestCase
 {

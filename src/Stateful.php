@@ -1,18 +1,19 @@
-<?php namespace Neon\Finite;
+<?php
+
+namespace CodersCantina\LaravelFinite;
 
 trait Stateful
 {
-    /** @var StateMachine */
-    protected $stateMachine;
+    protected StateMachine $stateMachine;
 
-    public function setStateMachine(StateMachine $stateMachine)
+    public function setStateMachine(StateMachine $stateMachine): self
     {
         $this->stateMachine = $stateMachine;
 
         return $this;
     }
 
-    public function getState()
+    public function getState(): State
     {
         return $this->stateMachine->getCurrentState();
     }

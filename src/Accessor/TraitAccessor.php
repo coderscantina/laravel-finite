@@ -1,50 +1,31 @@
-<?php namespace Neon\Finite\Accessor;
+<?php
 
-use Neon\Finite\StateTrait;
+namespace CodersCantina\LaravelFinite\Accessor;
+
+use ArrayAccess;
 
 class TraitAccessor implements Accessor
 {
-    /**
-     * @param StateTrait $object
-     *
-     * @return null|string
-     */
-    public function getState($object)
+    public function getState(object $object): ?string
     {
         return $object->getState();
     }
 
-    /**
-     * @param StateTrait $object
-     * @param string $state
-     *
-     * @return $this
-     */
-    public function setState($object, $state)
+    public function setState(object $object, string $state): self
     {
         $object->setState($state);
 
         return $this;
     }
 
-    /**
-     * @param StateTrait $object
-     * @param array $properties
-     *
-     * @return self
-     */
-    public function applyProperties($object, $properties)
+    public function applyProperties(object $object, array $properties): self
     {
         $object->applyProperties($properties);
+
+        return $this;
     }
 
-    /**
-     * @param $object
-     * @param \Closure[] $guards
-     *
-     * @return bool
-     */
-    public function callGuards($object, $guards)
+    public function callGuards(object $object, array|ArrayAccess $guards): bool
     {
         $result = true;
 

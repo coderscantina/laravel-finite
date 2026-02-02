@@ -1,4 +1,5 @@
-<?php namespace Neon\Finite;
+<?php
+namespace CodersCantina\LaravelFinite;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,13 +46,13 @@ class TestModel extends Model
     {
         $stateMachine->initialize(
             [
-                'states'      => [
+                'states' => [
                     'draft' => ['type' => 'initial']
                 ],
                 'transitions' => [
                     'propose' => ['from' => ['draft'], 'to' => 'proposed'],
-                    'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
-                    'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+                    'accept' => ['from' => ['proposed'], 'to' => 'accepted'],
+                    'refuse' => ['from' => ['proposed'], 'to' => 'refused']
                 ]
             ]
         );
@@ -76,13 +77,13 @@ class TestModel2 extends Model
     {
         $stateMachine->initialize(
             [
-                'states'      => [
+                'states' => [
                     'draft' => ['type' => 'initial']
                 ],
                 'transitions' => [
                     'propose' => ['from' => ['draft'], 'to' => 'proposed'],
-                    'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
-                    'refuse'  => ['from' => ['proposed'], 'to' => 'refused']
+                    'accept' => ['from' => ['proposed'], 'to' => 'accepted'],
+                    'refuse' => ['from' => ['proposed'], 'to' => 'refused']
                 ]
             ]
         );

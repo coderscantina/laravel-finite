@@ -1,7 +1,8 @@
-<?php namespace Neon\Finite;
+<?php
+namespace CodersCantina\LaravelFinite;
 
 use Illuminate\Support\Fluent;
-use Neon\Finite\Accessor\FluentAccessor;
+use CodersCantina\LaravelFinite\Accessor\FluentAccessor;
 use PHPUnit\Framework\TestCase;
 
 class ComplexExampleTest extends TestCase
@@ -13,21 +14,21 @@ class ComplexExampleTest extends TestCase
         parent::setUp();
 
         $this->config = [
-            'states'      => [
-                'draft'     => ['type' => 'initial', 'properties' => []],
-                'review'    => ['type' => 'normal', 'properties' => []],
-                'proposed'  => ['type' => 'normal', 'properties' => []],
+            'states' => [
+                'draft' => ['type' => 'initial', 'properties' => []],
+                'review' => ['type' => 'normal', 'properties' => []],
+                'proposed' => ['type' => 'normal', 'properties' => []],
                 'confirmed' => ['type' => 'normal', 'properties' => []],
-                'accepted'  => ['type' => 'final', 'properties' => []],
-                'refused'   => ['type' => 'final', 'properties' => []],
+                'accepted' => ['type' => 'final', 'properties' => []],
+                'refused' => ['type' => 'final', 'properties' => []],
             ],
             'transitions' => [
                 'propose' => ['from' => ['draft', 'review'], 'to' => 'proposed'],
-                'review'  => ['from' => ['draft', 'proposed'], 'to' => 'review'],
+                'review' => ['from' => ['draft', 'proposed'], 'to' => 'review'],
                 'redraft' => ['from' => ['proposed', 'review'], 'to' => 'draft'],
                 'confirm' => ['from' => ['review', 'proposed'], 'to' => 'confirmed'],
-                'accept'  => ['from' => ['proposed'], 'to' => 'accepted'],
-                'refuse'  => ['from' => ['proposed', 'confirmed'], 'to' => 'refused'],
+                'accept' => ['from' => ['proposed'], 'to' => 'accepted'],
+                'refuse' => ['from' => ['proposed', 'confirmed'], 'to' => 'refused'],
             ]
         ];
     }
