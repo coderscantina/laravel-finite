@@ -3,6 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/coderscantina/laravel-finite.svg?style=flat-square)](https://packagist.org/packages/coderscantina/laravel-finite)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/coderscantina/laravel-finite.svg?style=flat-square)](https://packagist.org/packages/coderscantina/laravel-finite)
+[![Laravel Compatibility](https://badge.laravel.cloud/badge/coderscantina/laravel-finite)](https://packagist.org/packages/coderscantina/laravel-finite)
 
 A powerful finite state machine (FSM) library for Laravel/Eloquent models. Manage complex state workflows with a simple, fluent API.
 
